@@ -116,4 +116,9 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
             call = itemView.findViewById(R.id.call);
         }
     }
+
+    public void filterList(ArrayList<Contact> filteredList) {
+        datalist = filteredList;
+        notifyDataSetChanged();
+    }
 }
