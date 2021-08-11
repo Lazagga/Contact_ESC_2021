@@ -129,7 +129,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
     }
 
     private static long getContactIDFromNumber(ContentResolver contactHelper, String number) {
-        Uri contactUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI., Uri.encode(number));
+        Uri contactUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
 
         String[] projection = {ContactsContract.PhoneLookup._ID};
 
