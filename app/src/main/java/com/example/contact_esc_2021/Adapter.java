@@ -1,10 +1,16 @@
 package com.example.contact_esc_2021;
 
 import android.app.AlertDialog;
+import android.content.ContentProviderOperation;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.OperationApplicationException;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.RemoteException;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,7 +90,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
                 builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        //TODO : 핸드폰에서 연락처 지우기
+                        deleteContactFromNumber(context.getContentResolver(), datalist.get(position).getPhoneNumber());
                         datalist.remove(position);
                         notifyItemRemoved(position);
                         notifyItemRangeChanged(position, datalist.size());
@@ -120,5 +126,37 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
     public void filterList(ArrayList<Contact> filteredList) {
         datalist = filteredList;
         notifyDataSetChanged();
+    }
+
+    private static long getContactIDFromNumber(ContentResolver contactHelper, String number) {
+        Uri contactUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI., Uri.encode(number));
+
+        String[] projection = {ContactsContract.PhoneLookup._ID};
+
+        Cursor cursor = contactHelper.query(contactUri, projection, null, null, null);
+
+        if(cursor.moveToFirst()) {
+            return cursor.getLong(cursor.getColumnIndex(ContactsContract.PhoneLookup._ID));
+        }
+        else if(cursor != null) {
+            cursor.close();
+        }
+        return -1;
+    }
+
+    public static void deleteContactFromNumber(ContentResolver contactHelper, String number) {
+        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+        String[] WhereArgs = new String[] {String.valueOf(getContactIDFromNumber(contactHelper, number))};
+
+        ops.add(ContentProviderOperation.newDelete(ContactsContract.RawContacts.CONTENT_URI)
+                .withSelection(ContactsContract.RawContacts.CONTACT_ID + "=?", WhereArgs).build());
+
+        try {
+            contactHelper.applyBatch(ContactsContract.AUTHORITY, ops);
+        } catch (OperationApplicationException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.Editable;
@@ -22,6 +24,7 @@ import com.gun0912.tedpermission.TedPermission;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPermissionGranted() {
                 datalist.clear();
-                //datalist = getContactList();
+                datalist = getContactList();
                 adapter = new Adapter(MainActivity.this, datalist);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                 recyclerView.setAdapter(adapter);
@@ -90,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
         datalist = new ArrayList<>();
         datalist.clear();
-        //datalist = getContactList();
+        datalist = getContactList();
         adapter = new Adapter(MainActivity.this, datalist);
         recyclerView.setAdapter(adapter);
     }
@@ -105,5 +108,40 @@ public class MainActivity extends AppCompatActivity {
         }
         adapter.filterList(filteredList);
         recyclerView.setAdapter(adapter);
+    }
+
+    public ArrayList<Contact> getContactList() {
+        LinkedHashSet<Contact> hasList = new LinkedHashSet<>();
+        ArrayList<Contact> contactsList;
+
+        hasList.clear();
+
+        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+
+        String[] projection = new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME};
+
+        String sortOrder = ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
+
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, sortOrder);
+
+        if(cursor.moveToFirst()) {
+            do{
+                Contact myContact = new Contact();
+                myContact.setPhoneNumber(cursor.getString(0));
+                myContact.setName(cursor.getString(1));
+
+                if(myContact.getPhoneNumber().startsWith("01")) {
+                    hasList.add(myContact);
+                }
+            }while(cursor.moveToNext());
+        }
+
+        contactsList = new ArrayList<>(hasList);
+
+        if(cursor != null) {
+            cursor.close();
+        }
+        return contactsList;
     }
 }
