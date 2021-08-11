@@ -17,7 +17,7 @@
         android:ems="5"
         android:maxLines="1"
         android:text="이름"
-        android:textColor="@color/teal_700"
+        android:textColor="?attr/titleTextColor"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,6 +31,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:text="|"
+        android:textColor="?attr/titleTextColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/Name"
         app:layout_constraintTop_toTopOf="parent" />
@@ -43,7 +44,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:text="010-0000-0000"
-        android:textColor="@color/teal_700"
+        android:textColor="?attr/titleTextColor"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/Bar"
@@ -56,6 +57,7 @@
         android:layout_marginEnd="8dp"
         android:backgroundTint="@color/teal_700"
         android:text="전화/문자"
+        android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

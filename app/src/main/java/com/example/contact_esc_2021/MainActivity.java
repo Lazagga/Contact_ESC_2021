@@ -10,7 +10,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.ContactsContract;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -43,6 +45,26 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.MainRecycler);
         search = findViewById(R.id.SearchTextView);
         add = findViewById(R.id.Add);
+
+        SwipeRefreshLayout mSwipeRefreshLayout = findViewById(R.id.refreshLayout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                datalist = new ArrayList<Contact>();
+                datalist.clear();
+                datalist = getContactList();
+                adapter.notifyDataSetChanged();
+                recyclerView.setAdapter(adapter);
+
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 500);
+            }
+        });
 
         PermissionListener permissionListener = new PermissionListener() {
             @Override
